@@ -5,6 +5,7 @@ import time
 import traceback
 from collections import deque, defaultdict
 from itertools import compress
+from functools import partial
 
 import pyximport
 from deap import creator, base, tools, gp
@@ -758,15 +759,9 @@ class GPRegressor(NormalizationRegressor):
             # delete existing constant generator
             delattr(gp, "rand101")
         if self.random_float:
-            pset.addEphemeralConstant(
-                "rand101",
-                lambda: random.uniform(-self.constant_range, self.constant_range),
-            )
+            pset.addEphemeralConstant("rand101", partial(random.uniform, -self.constant_range, self.constant_range))
         else:
-            pset.addEphemeralConstant(
-                "rand101",
-                lambda: random.randint(-self.constant_range, self.constant_range),
-            )
+            pset.addEphemeralConstant("rand101", partial(random.randint, -self.constant_range, self.constant_range))
 
         number_of_objective = self.category_num
         creator.create(
